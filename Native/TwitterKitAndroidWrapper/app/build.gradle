@@ -1,0 +1,82 @@
+apply plugin: 'com.android.library'
+apply plugin: UnityPlugin
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 1
+        versionName version
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        setProperty("archivesBaseName", "${pom_artifact_id}-${versionName}")
+    }
+    buildTypes {
+        debug {
+            buildConfigField "String", "GROUP", "\"${pom_group_id}\""
+            buildConfigField "String", "ARTIFACT_ID", "\"${pom_artifact_id}\""
+            buildConfigField "long", "BUILD_TIME", "${System.currentTimeMillis()}L"
+        }
+        release {
+            buildConfigField "String", "GROUP", "\"${pom_group_id}\""
+            buildConfigField "String", "ARTIFACT_ID", "\"${pom_artifact_id}\""
+            buildConfigField "long", "BUILD_TIME", "${System.currentTimeMillis()}L"
+        }
+    }
+}
+
+dependencies {
+    provided fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.twitter.sdk.android:twitter-core:3.0.0'
+    compile 'com.twitter.sdk.android:tweet-composer:3.0.0'
+}
+
+class UnityPlugin implements Plugin<Project> {
+    @Override
+    void apply(final Project project) {
+        if (!project.plugins.findPlugin('com.android.library') &&
+                !project.plugins.findPlugin('android-library')) {
+            throw new ProjectConfigurationException(
+                    'UnityPlugin requires android-library or com.android.library plugin', null)
+        }
+
+        // Base directory for intermediate unity files
+        def unityBaseDir = new File("${project.buildDir}/outputs/unity_plugin/")
+
+        project.afterEvaluate {
+            project.android['libraryVariants'].each { variant ->
+                // Gather all the dependencies for current variant
+                def allDependencies = variant.getSourceSets()
+                        .collect { project.configurations.getByName(it.getCompileConfigurationName()) }
+                        .inject([], { list, value -> list + value })
+
+                // Delete working directory
+                def deleteAssetsTask = project.tasks.create(name: "${variant.name}DeleteUnityAssets", type: Delete) {
+                    delete unityBaseDir
+                }
+
+                // Copy jar dependencies
+                def copyJarAssetsTask = project.tasks.create(name: "${variant.name}CopyUnityJarAssets", type: Copy) {
+                    into unityBaseDir
+                    from allDependencies.findAll { it.name.endsWith('jar') && it.name != "unity.jar" }
+                }
+
+                // Copy aar library and dependencies for Unity 5+
+                def copyAarAssetsTask = project.tasks.create(name: "${variant.name}CopyUnityAarAssets", type: Copy) {
+                    into unityBaseDir
+                    from variant.outputs.collect { it.outputFile }
+                    from allDependencies.findAll { it.name.endsWith('aar') }
+                }
+
+                // Root Unity 5 task
+                project.tasks.create(name: "${variant.name}CreateUnityPackage") {
+                    dependsOn copyAarAssetsTask
+                    copyAarAssetsTask.dependsOn copyJarAssetsTask
+                    copyJarAssetsTask.dependsOn deleteAssetsTask
+                    deleteAssetsTask.dependsOn variant.assemble
+                }
+            }
+        }
+    }
+}
