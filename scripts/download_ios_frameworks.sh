@@ -16,7 +16,7 @@
 
 . $(dirname $0)/common.sh
 
-TWITTER_KIT_IOS_URL="https://ton.twimg.com/syndication/twitterkit/ios/3.0.3-update/TwitterKitManual.zip"
+TWITTER_KIT_IOS_URL="https://ton.twimg.com/syndication/twitterkit/ios/3.0.4/Twitter-Kit-iOS.zip"
 UNITY_IOS_PLUGIN_PATH=$UNITY_PACKAGE_ROOT/$UNITY_IOS_PLUGIN
 TEMP_PATH="output.zip"
 mkdir -p $UNITY_IOS_PLUGIN_PATH
@@ -27,10 +27,10 @@ downloadArtifact $TWITTER_KIT_IOS_URL $TEMP_PATH || die "Failed to download $REM
 
 unzipArtifact $TEMP_PATH || die "Failed to unzip $TEMP_PATH\n"
 
-info "Moving TwitterKitManual/* into $UNITY_IOS_PLUGIN_PATH\n"
-mv TwitterKitManual/* $UNITY_IOS_PLUGIN_PATH || die "Failed to move TwitterKitManual/* to $UNITY_IOS_PLUGIN_PATH\n"
+info "Moving Twitter-Kit-iOS/* into $UNITY_IOS_PLUGIN_PATH\n"
+mv Twitter-Kit-iOS/* $UNITY_IOS_PLUGIN_PATH || die "Failed to move Twitter-Kit-iOS/* to $UNITY_IOS_PLUGIN_PATH\n"
 
 info "Cleaning up temporary files\n"
-rmdir TwitterKitManual
+rmdir Twitter-Kit-iOS
 rm -f $TEMP_PATH
 popd > /dev/null
