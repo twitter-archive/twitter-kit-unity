@@ -28,6 +28,10 @@ using TwitterKit.Unity.Settings;
 
 public class TwitterPostProcessBuild {
 
+	private const string URL_TYPES = "CFBundleURLTypes";
+	private const string URL_SCHEMES = "CFBundleURLSchemes";
+	private const string APPLICATION_QUERIES_SCHEMES = "LSApplicationQueriesSchemes";
+
 	[PostProcessBuild]
 	public static void UpdateXCodePlist(BuildTarget buildTarget, string pathToBuiltProject) {
 		#if UNITY_IOS
@@ -48,11 +52,17 @@ public class TwitterPostProcessBuild {
 			PlistElementDict rootDict = plist.root;
 
 			// Modify Info.Plist for Twitter Kit (https://dev.twitter.com/twitterkit/ios/installation)
-			PlistElementArray bundleURLTypesArray = rootDict.CreateArray ("CFBundleURLTypes");
+			PlistElementArray bundleURLTypesArray = rootDict[URL_TYPES] as PlistElementArray;
+			if (bundleURLTypesArray == null) {
+			    bundleURLTypesArray = rootDict.CreateArray (URL_TYPES);
+			}
 			PlistElementDict dict = bundleURLTypesArray.AddDict ();
-			PlistElementArray bundleURLSchemesArray = dict.CreateArray ("CFBundleURLSchemes");
+			PlistElementArray bundleURLSchemesArray = dict.CreateArray (URL_SCHEMES);
 			bundleURLSchemesArray.AddString ("twitterkit-" + TwitterSettings.ConsumerKey);
-			PlistElementArray queriesSchemesArray = rootDict.CreateArray ("LSApplicationQueriesSchemes");
+			PlistElementArray queriesSchemesArray = rootDict[APPLICATION_QUERIES_SCHEMES] as PlistElementArray;
+			if (queriesSchemesArray == null) {
+				queriesSchemesArray = rootDict.CreateArray (APPLICATION_QUERIES_SCHEMES);
+			}
 			queriesSchemesArray.AddString ("twitter");
 			queriesSchemesArray.AddString ("twitterauth");
 
