@@ -16,6 +16,6 @@
 #import "AppDelegateListener.h"
 #include "RegisterMonoModules.h"
 
-@interface TwitterUnityWrapper : NSObject <AppDelegateListener>
+@interface TwitterUnityWrapper : NSObject <AppDelegateListener, TWTRComposerViewControllerDelegate>
 + (TwitterUnityWrapper *)sharedInstance;
 @end

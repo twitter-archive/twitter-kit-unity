@@ -68,6 +68,7 @@ namespace TwitterKit.Unity
 			twitterGameObject.GetComponent<TwitterComponent> ().loginFailureAction = failureCallback;
 			twitter.LogIn ();
 		}
+
 		/// <summary>
 		/// Logout of current session
 		/// </summary>
@@ -75,6 +76,7 @@ namespace TwitterKit.Unity
 		{
 			twitter.LogOut ();
 		}
+
 		/// <summary>
 		/// Returns the active session.
 		/// </summary>
@@ -92,17 +94,21 @@ namespace TwitterKit.Unity
 			twitterGameObject.GetComponent<TwitterComponent> ().emailFailureAction = failureCallback;
 			twitter.RequestEmail (session);
 		}
+
 		/// <summary>
 		/// Show Twitter composer
 		/// <param name="session">User’s session from Login</param>
 		/// <param name="imageUri">uri of image to include in tweet</param>
 		/// <param name="text">text to tweet to pre-fill</param>
 		/// <param name="hashtags">hashtags to pre-fill</param>
+		/// <param name="successCallback">Callback to call on success</param>
+		/// <param name="failureCallback">Callback to call on failure</param>
 		/// </summary>
-		public static void Compose (TwitterSession session, String imageUri, String text, string[] hashtags = null)
+		public static void Compose (TwitterSession session, String imageUri, String text, string[] hashtags = null, Action<string> successCallback = null, Action<ApiError> failureCallback = null)
 		{
+			twitterGameObject.GetComponent<TwitterComponent> ().tweetSuccessAction = successCallback;
+			twitterGameObject.GetComponent<TwitterComponent> ().tweetFailureAction = failureCallback;
 			twitter.Compose (session, imageUri, text, hashtags);
 		}
 	}
-		
 }

@@ -15,6 +15,68 @@
 #import <TwitterKit/TwitterKit.h>
 #import "TwitterKitIOSWrapper.h"
 
+/**
+ *  Constants for posting responses via messages to Unity.
+ */
+static const char * TWTRInternalGameObject = "TwitterGameObject";
+static const char * TWTRUnityAPIMethodLogInComplete = "LoginComplete";
+static const char * TWTRUnityAPIMethodLogInFailed = "LoginFailed";
+static const char * TWTRUnityAPIMethodRequestEmailComplete = "RequestEmailComplete";
+static const char * TWTRUnityAPIMethodRequestEmailFailed = "RequestEmailFailed";
+static const char * TWTRUnityAPIMethodTweetComplete = "TweetComplete";
+static const char * TWTRUnityAPIMethodTweetFailed = "TweetFailed";
+
+
+#pragma mark - String Helpers
+
+static char * cStringCopy(const char *string)
+{
+    if (string == NULL)
+        return NULL;
+    
+    char *res = (char *)malloc(strlen(string) + 1);
+    strcpy(res, string);
+    
+    return res;
+}
+
+static NSString * const NSStringFromCString(const char *string)
+{
+    if (string != NULL) {
+        return [NSString stringWithUTF8String:string];
+    } else {
+        return nil;
+    }
+}
+
+static char * serializedJSONFromNSDictionary(NSDictionary *dictionary)
+{
+    if (!dictionary) {
+        return NULL;
+    }
+    
+    NSData *serializedData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
+    NSString *serializedJSONString = [[NSString alloc] initWithData:serializedData encoding:NSUTF8StringEncoding];
+    return cStringCopy([serializedJSONString UTF8String]);
+}
+
+#pragma mark - Helpers
+
+// Serialization format is set to match Android so we can share serializer and deserializers in Unity
+static NSDictionary * NSDictionaryFromTWTRSession(TWTRSession *session)
+{
+    if (!session) {
+        return nil;
+    }
+    
+    return @{ @"id": @(session.userID.longLongValue), @"auth_token": @{ @"token": session.authToken, @"secret": session.authTokenSecret }, @"user_name": session.userName };
+}
+
+static NSDictionary * NSDictionaryFromError(NSError *error)
+{
+    return @{ @"code": @(error.code), @"message": error.localizedDescription };
+}
+
 static TwitterUnityWrapper *_instance = [TwitterUnityWrapper sharedInstance];
 
 @implementation TwitterUnityWrapper
@@ -49,66 +111,25 @@ static TwitterUnityWrapper *_instance = [TwitterUnityWrapper sharedInstance];
                                   options:notification.userInfo[@"annotation"]];
 }
 
+- (void)composerDidCancel:(TWTRComposerViewController *)controller
+{
+    UnitySendMessage(TWTRInternalGameObject, TWTRUnityAPIMethodTweetFailed, "");
+}
+
+- (void)composerDidFail:(TWTRComposerViewController *)controller withError:(NSError *)error
+{
+    NSDictionary *errorDictionary = NSDictionaryFromError(error);
+    char *serializedError = serializedJSONFromNSDictionary(errorDictionary);
+    UnitySendMessage(TWTRInternalGameObject, TWTRUnityAPIMethodTweetFailed, serializedError);
+}
+
+- (void)composerDidSucceed:(TWTRComposerViewController *)controller withTweet:(TWTRTweet *)tweet
+{
+    char *cStringTweetId = cStringCopy([tweet.tweetID UTF8String]);
+    UnitySendMessage(TWTRInternalGameObject, TWTRUnityAPIMethodTweetComplete, cStringTweetId);
+}
+
 @end
-
-/**
- *  Constants for posting responses via messages to Unity.
- */
-static const char * TWTRInternalGameObject = "TwitterGameObject";
-static const char * TWTRUnityAPIMethodLogInComplete = "LoginComplete";
-static const char * TWTRUnityAPIMethodLogInFailed = "LoginFailed";
-static const char * TWTRUnityAPIMethodRequestEmailComplete = "RequestEmailComplete";
-static const char * TWTRUnityAPIMethodRequestEmailFailed = "RequestEmailFailed";
-
-#pragma mark - String Helpers
-
-static char * cStringCopy(const char *string)
-{
-    if (string == NULL)
-        return NULL;
-
-    char *res = (char *)malloc(strlen(string) + 1);
-    strcpy(res, string);
-
-    return res;
-}
-
-static NSString * const NSStringFromCString(const char *string)
-{
-    if (string != NULL) {
-        return [NSString stringWithUTF8String:string];
-    } else {
-        return nil;
-    }
-}
-
-static char * serializedJSONFromNSDictionary(NSDictionary *dictionary)
-{
-    if (!dictionary) {
-        return NULL;
-    }
-
-    NSData *serializedData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
-    NSString *serializedJSONString = [[NSString alloc] initWithData:serializedData encoding:NSUTF8StringEncoding];
-    return cStringCopy([serializedJSONString UTF8String]);
-}
-
-#pragma mark - Helpers
-
-// Serialization format is set to match Android so we can share serializer and deserializers in Unity
-static NSDictionary * NSDictionaryFromTWTRSession(TWTRSession *session)
-{
-    if (!session) {
-        return nil;
-    }
-
-    return @{ @"id": @(session.userID.longLongValue), @"auth_token": @{ @"token": session.authToken, @"secret": session.authTokenSecret }, @"user_name": session.userName };
-}
-
-static NSDictionary * NSDictionaryFromError(NSError *error)
-{
-    return @{ @"code": @(error.code), @"message": error.localizedDescription };
-}
 
 __BEGIN_DECLS
 
@@ -193,6 +214,7 @@ void TwitterCompose(const char *userID, const char *imageURI, const char *text, 
     }
 
     TWTRComposerViewController *composerVC = [[TWTRComposerViewController alloc] initWithInitialText:[NSString stringWithFormat:@"%@%@", NSStringFromCString(text), hashtagsString] image:image videoURL:nil];
+    composerVC.delegate = TwitterUnityWrapper.sharedInstance;
     
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:composerVC animated:YES completion:nil];
 }

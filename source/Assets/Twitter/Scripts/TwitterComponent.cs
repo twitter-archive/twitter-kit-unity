@@ -31,6 +31,10 @@ namespace TwitterKit.Internal
 
 		public Action<ApiError> emailFailureAction { set; get; }
 
+		public Action<string> tweetSuccessAction { set; get; }
+
+		public Action<ApiError> tweetFailureAction { set; get; }
+
 		public void Awake ()
 		{
 			MonoBehaviour.DontDestroyOnLoad (this);
@@ -70,6 +74,21 @@ namespace TwitterKit.Internal
 				emailFailureAction (ApiError.Deserialize (error));
 			}
 		}
+
+		public void TweetComplete (string tweetId)
+		{
+			UnityEngine.Debug.Log ("Tweet completed");
+			if (tweetSuccessAction != null) {
+				tweetSuccessAction (tweetId);
+			}
+		}
+
+		public void TweetFailed (string error)
+		{
+			UnityEngine.Debug.Log ("Tweet failed");
+			if (tweetFailureAction != null) {
+				tweetFailureAction (ApiError.Deserialize (error));
+			}
+		}
 	}
 }
-
