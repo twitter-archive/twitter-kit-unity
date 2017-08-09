@@ -35,6 +35,8 @@ namespace TwitterKit.Internal
 
 		public Action<ApiError> tweetFailureAction { set; get; }
 
+		public Action tweetCancelAction { set; get; }
+	
 		public void Awake ()
 		{
 			MonoBehaviour.DontDestroyOnLoad (this);
@@ -88,6 +90,14 @@ namespace TwitterKit.Internal
 			UnityEngine.Debug.Log ("Tweet failed");
 			if (tweetFailureAction != null) {
 				tweetFailureAction (ApiError.Deserialize (error));
+			}
+		}
+
+		public void TweetCancelled ()
+		{
+			UnityEngine.Debug.Log ("Tweet cancelled");
+			if (tweetCancelAction != null) {
+				tweetCancelAction ();
 			}
 		}
 	}

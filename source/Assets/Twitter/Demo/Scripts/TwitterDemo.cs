@@ -25,7 +25,6 @@ public class TwitterDemo : MonoBehaviour
 	
 	public void RequestEmailComplete (string email) {
 		UnityEngine.Debug.Log ("email=" + email);
-		
 		LoginCompleteWithCompose ( Twitter.Session );
 	}
 	
@@ -33,7 +32,10 @@ public class TwitterDemo : MonoBehaviour
 		Application.CaptureScreenshot("Screenshot.png");
 		UnityEngine.Debug.Log ("Screenshot location=" + Application.persistentDataPath + "/Screenshot.png");
 		string imageUri = "file://" + Application.persistentDataPath + "/Screenshot.png";
-		
-		Twitter.Compose (session, imageUri, "Welcome to", new string[]{"#TwitterKitUnity"});
+		Twitter.Compose (session, imageUri, "Welcome to", new string[]{"#TwitterKitUnity"},
+			(string tweetId) => { UnityEngine.Debug.Log ("Tweet Success, tweetId=" + tweetId); },
+			(ApiError error) => { UnityEngine.Debug.Log ("Tweet Failed " + error.message); },
+			() => { Debug.Log ("Compose cancelled"); }
+		 );
 	}
 }

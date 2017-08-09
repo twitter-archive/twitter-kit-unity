@@ -103,11 +103,13 @@ namespace TwitterKit.Unity
 		/// <param name="hashtags">hashtags to pre-fill</param>
 		/// <param name="successCallback">Callback to call on success</param>
 		/// <param name="failureCallback">Callback to call on failure</param>
+		/// <param name="cancelCallback">Callback to call on cancel</param>
 		/// </summary>
-		public static void Compose (TwitterSession session, String imageUri, String text, string[] hashtags = null, Action<string> successCallback = null, Action<ApiError> failureCallback = null)
+		public static void Compose (TwitterSession session, String imageUri, String text, string[] hashtags = null, Action<string> successCallback = null, Action<ApiError> failureCallback = null, Action cancelCallback = null)
 		{
 			twitterGameObject.GetComponent<TwitterComponent> ().tweetSuccessAction = successCallback;
 			twitterGameObject.GetComponent<TwitterComponent> ().tweetFailureAction = failureCallback;
+			twitterGameObject.GetComponent<TwitterComponent> ().tweetCancelAction = cancelCallback;
 			twitter.Compose (session, imageUri, text, hashtags);
 		}
 	}
