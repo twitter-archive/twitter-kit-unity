@@ -25,7 +25,7 @@ static const char * TWTRUnityAPIMethodRequestEmailComplete = "RequestEmailComple
 static const char * TWTRUnityAPIMethodRequestEmailFailed = "RequestEmailFailed";
 static const char * TWTRUnityAPIMethodTweetComplete = "TweetComplete";
 static const char * TWTRUnityAPIMethodTweetFailed = "TweetFailed";
-
+static const char * TWTRUnityAPIMethodTweetCancelled = "TweetCancelled";
 
 #pragma mark - String Helpers
 
@@ -113,7 +113,7 @@ static TwitterUnityWrapper *_instance = [TwitterUnityWrapper sharedInstance];
 
 - (void)composerDidCancel:(TWTRComposerViewController *)controller
 {
-    UnitySendMessage(TWTRInternalGameObject, TWTRUnityAPIMethodTweetFailed, "");
+    UnitySendMessage(TWTRInternalGameObject, TWTRUnityAPIMethodTweetCancelled, "");
 }
 
 - (void)composerDidFail:(TWTRComposerViewController *)controller withError:(NSError *)error
