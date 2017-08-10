@@ -13,10 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+if [ "$#" -ne 1 ]; then
+  echo "Usage: ./scripts/download_ios_frameworks.sh [version #] (e.g., ./scripts/download_ios_frameworks.sh 3.1.0)" >&2
+  exit 1
+fi
 
 . $(dirname $0)/common.sh
 
-TWITTER_KIT_IOS_URL="https://ton.twimg.com/syndication/twitterkit/ios/3.0.4/Twitter-Kit-iOS.zip"
+TWITTER_KIT_IOS_URL="https://ton.twimg.com/syndication/twitterkit/ios/$1/Twitter-Kit-iOS.zip"
 UNITY_IOS_PLUGIN_PATH=$UNITY_PACKAGE_ROOT/$UNITY_IOS_PLUGIN
 TEMP_PATH="output.zip"
 mkdir -p $UNITY_IOS_PLUGIN_PATH
