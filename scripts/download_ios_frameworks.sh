@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 if [ "$#" -ne 1 ]; then
-  echo "Usage: ./scripts/download_ios_frameworks.sh [version #] (e.g., ./scripts/download_ios_frameworks.sh 3.1.0)" >&2
+  echo "Usage: ./scripts/download_ios_frameworks.sh [version #] (e.g.: ./scripts/download_ios_frameworks.sh 3.1.0)" >&2
   exit 1
 fi
 

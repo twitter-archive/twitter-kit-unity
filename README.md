@@ -5,7 +5,7 @@ Twitter Kit for Unity provides cross-platform support (iOS & Android) for author
 ## Building
 1. Download Twitter Kit frameworks.
 ```
-./scripts/download_ios_frameworks.sh
+./scripts/download_ios_frameworks.sh [version #] (e.g.: ./scripts/download_ios_frameworks.sh 3.1.0)
 ```
 2. Build the Android wrapper.
 ```
