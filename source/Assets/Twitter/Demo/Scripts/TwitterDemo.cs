@@ -13,12 +13,13 @@ public class TwitterDemo : MonoBehaviour
 		// To set API key navigate to tools->Twitter Kit
 		Twitter.Init ();
 
-		Twitter.LogIn (LoginCompleteWithEmail, (ApiError error) => {
+		Twitter.LogIn (LoginCompleteWithCompose, (ApiError error) => {
 			UnityEngine.Debug.Log (error.message);
 		});
 	}
 	
 	public void LoginCompleteWithEmail (TwitterSession session) {
+		// To get the user's email address you must have "Request email addresses from users" enabled on https://apps.twitter.com/ (Permissions -> Additional Permissions)
 		UnityEngine.Debug.Log ("LoginCompleteWithEmail()");
 		Twitter.RequestEmail (session, RequestEmailComplete, (ApiError error) => { UnityEngine.Debug.Log (error.message); });
 	}
