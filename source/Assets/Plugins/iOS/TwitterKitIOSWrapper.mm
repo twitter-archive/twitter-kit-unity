@@ -104,6 +104,10 @@ static TwitterUnityWrapper *_instance = [TwitterUnityWrapper sharedInstance];
     return self;
 }
 
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+    return [[Twitter sharedInstance] application:app openURL:url options:options];
+}
+
 - (void)onOpenURL:(NSNotification *)notification
 {
     [[Twitter sharedInstance] application:[UIApplication sharedApplication]
