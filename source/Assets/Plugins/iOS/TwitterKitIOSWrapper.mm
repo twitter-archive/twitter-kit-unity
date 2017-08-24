@@ -151,8 +151,9 @@ void TwitterInit(const char *consumerKey, const char *consumerSecret)
  */
 void TwitterLogIn()
 {
-   [[Twitter sharedInstance] logInWithCompletion:^(TWTRSession *session, NSError *error) {
-       if (session) {
+    UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    [[Twitter sharedInstance] logInWithViewController:rootViewController completion:^(TWTRSession *session, NSError *error) {
+        if (session) {
             NSDictionary *sessionDictionary = NSDictionaryFromTWTRSession(session);
             char *serializedSession = serializedJSONFromNSDictionary(sessionDictionary);
             UnitySendMessage(TWTRInternalGameObject, TWTRUnityAPIMethodLogInComplete, serializedSession);
