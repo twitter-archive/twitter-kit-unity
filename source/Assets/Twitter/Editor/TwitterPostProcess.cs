@@ -43,6 +43,14 @@ public class TwitterPostProcessBuild {
 				return;
 			}
 
+			// Add SafariServices.framework to Link Binary With Libraries section           
+			var pbxprojPath = PBXProject.GetPBXProjectPath(pathToBuiltProject);
+			var project = new PBXProject();
+			project.ReadFromString(File.ReadAllText(pbxprojPath));
+			var target = project.TargetGuidByName(PBXProject.GetUnityTargetName());
+			project.AddFrameworkToProject(target, "SafariServices.framework", false);
+			File.WriteAllText(pbxprojPath, project.WriteToString());
+
 			// Get plist
 			string plistPath = pathToBuiltProject + "/Info.plist";
 			PlistDocument plist = new PlistDocument();
