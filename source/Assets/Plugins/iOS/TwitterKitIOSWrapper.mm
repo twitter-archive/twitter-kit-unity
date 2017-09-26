@@ -26,6 +26,7 @@ static const char * TWTRUnityAPIMethodRequestEmailFailed = "RequestEmailFailed";
 static const char * TWTRUnityAPIMethodTweetComplete = "TweetComplete";
 static const char * TWTRUnityAPIMethodTweetFailed = "TweetFailed";
 static const char * TWTRUnityAPIMethodTweetCancelled = "TweetCancelled";
+UIViewController * UnityGetGLViewController();
 
 #pragma mark - String Helpers
 
@@ -221,7 +222,7 @@ void TwitterCompose(const char *userID, const char *imageURI, const char *text, 
     TWTRComposerViewController *composerVC = [[TWTRComposerViewController alloc] initWithInitialText:[NSString stringWithFormat:@"%@%@", NSStringFromCString(text), hashtagsString] image:image videoURL:nil];
     composerVC.delegate = TwitterUnityWrapper.sharedInstance;
     
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:composerVC animated:YES completion:nil];
+    [UnityGetGLViewController() presentViewController:composerVC animated:YES completion:nil];
 }
 
 /**
