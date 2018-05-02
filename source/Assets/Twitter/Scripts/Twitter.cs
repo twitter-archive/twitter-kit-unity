@@ -15,11 +15,11 @@
  *
  */
 namespace TwitterKit.Unity
-{	
+{
 	using UnityEngine;
 	using System;
 	using System.Collections.Generic;
-	using Internal;
+	using TwitterKit.Internal;
 	using TwitterKit.Unity.Settings;
 
 	public sealed class Twitter : ScriptableObject
