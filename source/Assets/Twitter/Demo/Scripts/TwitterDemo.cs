@@ -30,7 +30,12 @@ public class TwitterDemo : MonoBehaviour
 	}
 	
 	public void LoginCompleteWithCompose(TwitterSession session) {
+#if UNITY_2017_1_OR_NEWER
+		ScreenCapture.CaptureScreenshot("Screenshot.png");
+#else
 		Application.CaptureScreenshot("Screenshot.png");
+#endif
+		
 		UnityEngine.Debug.Log ("Screenshot location=" + Application.persistentDataPath + "/Screenshot.png");
 		string imageUri = "file://" + Application.persistentDataPath + "/Screenshot.png";
 		Twitter.Compose (session, imageUri, "Welcome to", new string[]{"#TwitterKitUnity"},
