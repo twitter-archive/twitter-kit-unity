@@ -15,7 +15,9 @@
  *
  */
 
-#if UNITY_EDITOR
+#if UNITY_IOS && !UNITY_EDITOR
+#elif UNITY_ANDROID && !UNITY_EDITOR
+#else
 namespace TwitterKit.Internal
 {
 	using TwitterKit.Unity;
