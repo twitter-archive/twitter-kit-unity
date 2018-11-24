@@ -18,7 +18,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.twitter.sdk.android.unity">
     <application>
-        <activity android:name="com.twitter.sdk.android.unity.LoginActivity" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name="com.twitter.sdk.android.unity.LoginActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
         <receiver
             android:name="com.twitter.sdk.android.unity.TweetReceiver"
             android:exported="false">
