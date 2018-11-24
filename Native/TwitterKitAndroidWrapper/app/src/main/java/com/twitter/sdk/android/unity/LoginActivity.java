@@ -60,6 +60,7 @@ public class LoginActivity extends Activity {
                         .setData(error)
                         .build();
                 message.send();
+                authClient.cancelAuthorize();
                 finish();
             }
         });
