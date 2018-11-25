@@ -33,6 +33,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
  */
 public class LoginActivity extends Activity {
     TwitterAuthClient authClient;
+    boolean didReceiveActivityResult = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,17 @@ public class LoginActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        didReceiveActivityResult = true;
         authClient.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(!didReceiveActivityResult)
+        {
+            didReceiveActivityResult = true;
+            authClient.onActivityResult(authClient.getRequestCode(), RESULT_CANCELED, null);
+        }
     }
 }
